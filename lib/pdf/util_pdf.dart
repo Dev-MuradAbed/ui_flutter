@@ -127,6 +127,16 @@ Future<String?> _getFolderId(drive.DriveApi driveApi,String folderName,BuildCont
     print("Folder ID: ${folderCreation.id}");
 
     return folderCreation.id;
+  }on drive.DetailedApiRequestError catch (e) {
+    if(e.status==401&&e.message=="Invalid Credentials"){
+      final googleUser = await _google.signInSilently();
+      final googleAuth=await googleUser?.authentication;
+      print("refreshToken ::${googleAuth?.accessToken}");
+      if(googleUser==null){
+        return '';
+      }
+    }
+    // I/flutter ( 6132): DetailedApiRequestError(status: 403, message: The granted scopes do not give access to all of the requested spaces.)
   } catch (e) {
     print(e);
     return null;
